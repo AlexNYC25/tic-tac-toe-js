@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #ticTacToeBoard{
+                display: grid;
+                height: 300px;
+                width: 300px;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+            }
+            .gameSpace{
+                height: 100px;
+                width: 100px;
+                border-color: blue;
+                background-color: aqua;
+            }
+
+        </style>
+
+    </head>
+    <body>
+        <h1>Tic Tac Toe game</h1>
+
+        <h2 id="winnerDeclerationArea"></h2>
+
+        <div id="ticTacToeBoard">
+            <div id="row1">
+                <div id="space1" class="gameSpace" value="1"></div>
+                <div id="space4" class="gameSpace" value="4"></div>
+                <div id="space7" class="gameSpace" value="7"></div>
+            </div>
+            <div id="row2">
+                <div id="space2" class="gameSpace" value="2"></div>
+                <div id="space5" class="gameSpace" value="5"></div>
+                <div id="space8" class="gameSpace" value="8"></div>
+            </div>
+            <div id="row3">
+                <div id="space3" class="gameSpace" value="3"></div>
+                <div id="space6" class="gameSpace" value="6"></div>
+                <div id="space9" class="gameSpace" value="9"></div>
+            </div>
+        </div>
+
+
+        <div id="playerForm">
+            <form>
+                Player Name <input type="text" />
+                Player Avatar: X. <input type="radio" name="playerChoice" value="playerX"/> O.<input type="radio" name="playerChoice" value="playerY"/>
+                <button id="playerSubmit">Submit</button> 
+            </form>
+        </div>
+
+    </body>
+    <script>
+        /* module for GameBoard */
+        const GameBoard = (function(){
+            let gameBoard = [[null, null, null], [null, null, null], [null, null, null]];
+            let turnNumber = 0;
+
+            const getTurnNumber = function(){
+                return turnNumber
+            };
+            const resetTurnNumber = function (){
+                turnNumber = 0
+            };
+
+            const gameBoardReset = function(){
+                for(let x = 0; x < 3; x++){
+                    for(let y = 0; y < 3; y++){
+                        gameBoard[x][y] = null;
+                    }
+                }
+            };
+            const resetHTMLBoard = function(){
+                let gameSquares = document.getElementsByClassName("gameSpace");
+                for(let x = 0; x < gameSquares.length; x++){
+                    gameSquares[x].innerHTML = "";
+                }
+            }
+            const resetWinnerDeclaration = function(){
+                let decleration = document.getElementById("winnerDeclerationArea");
+                decleration.innerHTML = "";
+            }
+            const getCurrentValue = function(){
+                if((turnNumber % 2) == 0){
+                    turnNumber = turnNumber + 1;
+                    return "X";
+                }
+                if((turnNumber % 2) == 1){
+                    turnNumber = turnNumber + 1;
+                    return "O";
+                }
+            };
+            const resetAll = function(){
+                gameBoardReset();
+                resetTurnNumber();
+                resetHTMLBoard();
+                resetWinnerDeclaration();
+            }
+            const winnerDecleration = function(playerVal){
+                let textArea = document.getElementById("winnerDeclerationArea");
+                textArea.innerHTML = `The Winner is player ${playerVal} <button id="resetButton">Play Again</button>`
+                let resetButton = document.getElementById("resetButton");
+                resetButton.addEventListener("click", resetAll)
+            }
+            const checkForWinner = function(){
+                // debug console log use 
+                console.log(gameBoard)
+
+                // all possible winning game combination
+                if((gameBoard[0][0] == gameBoard[1][0]) && (gameBoard[1][0] == gameBoard[2][0]) && (gameBoard[0][0] !== null)){
+                    console.log("winner in first row");
+                    winnerDecleration(gameBoard[0][0])
+                    
+                    
+                }
+                if((gameBoard[0][1] == gameBoard[1][1]) && (gameBoard[1][1] == gameBoard[2][1]) && (gameBoard[0][1] !== null)){
+                    console.log("winner in second row")
+                    winnerDecleration(gameBoard[0][1])
+                }
+                if((gameBoard[0][2] == gameBoard[1][2]) && (gameBoard[1][2] == gameBoard[2][2]) && (gameBoard[0][2] !== null)){
+                    console.log("winner in third row")
+                    winnerDecleration(gameBoard[0][2])
+                    
+                }
+                if((gameBoard[0][0] == gameBoard[0][1]) && (gameBoard[0][1] == gameBoard[0][2]) && (gameBoard[0][0] !== null)){
+                    console.log("winner in first column")
+                    winnerDecleration(gameBoard[0][0])
+                    
+                }
+                if((gameBoard[1][0] == gameBoard[1][1]) && (gameBoard[1][1] == gameBoard[1][2]) && (gameBoard[1][0] !== null)){
+                    console.log("winner in second column")
+                    winnerDecleration(gameBoard[1][0])
+                }
+                if((gameBoard[2][0] == gameBoard[2][1]) && (gameBoard[2][1] == gameBoard[2][2]) && (gameBoard[2][0] !== null)){
+                    console.log("winner in third column")
+                    winnerDecleration(gameBoard[2][0])
+                }
+                if((gameBoard[0][0] == gameBoard[1][1]) && (gameBoard[1][1] == gameBoard[2][2]) && (gameBoard[0][0] !== null)){
+                    console.log("winner in left diagonal")
+                    winnerDecleration(gameBoard[0][0])
+                }
+                if((gameBoard[0][2] == gameBoard[1][1]) && (gameBoard[1][1] == gameBoard[2][0]) && (gameBoard[0][2] !== null)){
+                    console.log("winner in right diagonal")
+                    winnerDecleration(gameBoard[0][2])
+                }
+
+            };
+            const assignValue = function(value){
+                if(value === 1){
+                    if(gameBoard[0][0] === null){
+                        gameBoard[0][0] = getCurrentValue();
+                        checkForWinner();
+                        return gameBoard[0][0];
+                    }
+                    else{
+                        checkForWinner();
+                        return gameBoard[0][0];
+                    }
+                }
+                if(value === 2){
+                    if(gameBoard[1][0] === null){
+                        gameBoard[1][0] = getCurrentValue();                    
+                        checkForWinner();
+                        return gameBoard[1][0];
+                    }
+                    else{
+                        checkForWinner();
+                        return gameBoard[1][0];
+                    }
+                    
+                }
+                if(value === 3){
+                    if(gameBoard[2][0] === null){
+                        gameBoard[2][0] = getCurrentValue();
+                        checkForWinner();
+                        return gameBoard[2][0];
+                    }
+                    else{
+                        checkForWinner();
+                        return gameBoard[2][0];
+                    }
+
+                }
+                if(value === 4){
+                    if(gameBoard[0][1] === null){
+                        gameBoard[0][1] = getCurrentValue();
+                        checkForWinner();
+                        return gameBoard[0][1];
+                    }
+                    else{
+                        checkForWinner();
+                        return gameBoard[0][1];
+                    }
+
+                }
+                if(value === 5){
+                    if(gameBoard[1][1] === null){
+                        gameBoard[1][1] = getCurrentValue();
+                        checkForWinner();
+                        return gameBoard[1][1];
+                    }
+                    else{
+                        checkForWinner();
+                        return gameBoard[1][1];
+                    }
+
+                }
+                if(value === 6){
+                    if(gameBoard[2][1] === null){
+                        gameBoard[2][1] = getCurrentValue();
+                        checkForWinner();
+                        return gameBoard[2][1];
+                    }
+                    else{
+                        checkForWinner();
+                        return gameBoard[2][1];
+                    }
+
+                }
+                if(value === 7){
+                    if(gameBoard[0][2] === null){
+                        gameBoard[0][2] = getCurrentValue();
+                        checkForWinner();
+                        return gameBoard[0][2];
+                    }
+                    else {
+                        checkForWinner();
+                        return gameBoard[0][2];
+                    }
+
+
+                }
+                if(value === 8){
+                    if(gameBoard[1][2] === null){
+                        gameBoard[1][2] = getCurrentValue();
+                        checkForWinner();
+                        return gameBoard[1][2];
+                    }
+                    else{
+                        checkForWinner();
+                        return gameBoard[1][2];
+                    }
+
+                }
+                if(value === 9){
+                    if(gameBoard[2][2] === null){
+                        gameBoard[2][2] = getCurrentValue();
+                        checkForWinner();
+                        return gameBoard[2][2];
+                    }
+                    else{
+                        checkForWinner();
+                        return gameBoard[2][2];
+                    }
+
+                }
+            }
+            
+            return {gameBoard, getTurnNumber, resetTurnNumber, assignValue, gameBoardReset, resetHTMLBoard};
+        })();
+
+        /* factory for player */
+        const player = {
+            name = null,
+            icon = icon,
+
+            setName(name){
+                this.name = name;
+            }
+        };
+
+        let playerX = player("x");
+        let playerO = player("o");
+
+
+        const generateSquareID = function(squareID){
+            if (squareID === "space1"){
+                return 1;
+            }
+            if (squareID === "space2"){
+                return 2;
+            }
+            if (squareID === "space3"){
+                return 3;
+            }
+            if (squareID === "space4"){
+                return 4;
+            }
+            if (squareID === "space5"){
+                return 5;
+            }
+            if (squareID === "space6"){
+                return 6;
+            }
+            if (squareID === "space7"){
+                return 7;
+            }
+            if (squareID === "space8"){
+                return 8;
+            }
+            if (squareID === "space9"){
+                return 9;
+            }
+        }
+
+        const gameSpaceEvent = function(){
+            console.log(`the space clicked is ${generateSquareID(this.id)} the turn is ${GameBoard.getTurnNumber()}`)
+            this.innerHTML = GameBoard.assignValue(generateSquareID(this.id))
+        }
+
+        let gameSpaces = document.getElementsByClassName("gameSpace");
+        for(let x = 0; x < gameSpaces.length; x++){
+            gameSpaces[x].addEventListener("click", gameSpaceEvent)
+        }
+
+    </script>
+</html>
